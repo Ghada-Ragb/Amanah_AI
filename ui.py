@@ -47,6 +47,7 @@ def source_label(source: dict) -> str:
 
 
 def reason_text(reason: dict) -> str:
+    """Arabic explanation of a decision code produced by the pipeline."""
     code = reason["code"]
     src = reason.get("source", "")
     if code == "exact_match":
@@ -98,6 +99,7 @@ def note_text(note: dict) -> str:
 
 
 def _diff_html(comparison: dict) -> str:
+    """Red = words only in the quotation; green = the source words that should be there."""
     parts = []
     for op in comparison["word_diff"]:
         if op["op"] == "equal":
@@ -246,6 +248,7 @@ def _highlighted_text(result: dict, title: str) -> str:
 
 
 def final_text(result: dict) -> str:
+    """Corrected text with an inline Arabic flag after every quotation that still needs attention."""
     text, reports = result["input_text"], result["spans"]
     for report in sorted(reports, key=lambda r: r["start"], reverse=True):
         if report["status"] == "CORRECTED" and report["correction"]:
@@ -275,6 +278,7 @@ def _final_block(result: dict) -> str:
 
 
 def render_results(result: dict, generated_answer: Optional[str] = None) -> str:
+    """HTML report for a pipeline result. Pass the model's answer (mode B) to show it first and label the text as generated."""
     header = render_generated_header(generated_answer) if generated_answer is not None else ""
     if not result["spans"]:
         body = (
@@ -318,7 +322,7 @@ HERO = f"""
 
 DISCLAIMER = """<div class="icv"><div class="disclaimer">أداة مساعدة للتدقيق النصي وليست فتوى ولا بديلًا عن المراجعة المتخصصة.
 النتائج مبنية على مراجع القرآن الكريم والكتب الستة المضمّنة فقط.
-<br>نص القرآن: <a href="https://tanzil.net" target="_blank" rel="noopener">مشروع Tanzil</a> (CC BY 3.0) · بيانات IslamicEval 2025.</div></div>"""
+<br>نص القرآن: <a href="https://tanzil.net" target="_blank" rel="noopener">مشروع <bdi>Tanzil</bdi></a> <bdi>(CC BY 3.0)</bdi> · بيانات <bdi>IslamicEval 2025</bdi></div></div>"""
 
 PLACEHOLDER = "الصق هنا النص الذي ولّده نموذج لغوي. يكتشف النظام الآيات والأحاديث الواردة فيه، بعلامات تنصيص أو بدونها…"
 PROMPT_PLACEHOLDER = "اكتب سؤالك، مثل: اشرح لي فضل الصبر في القرآن والسنة مع ذكر الأدلة."

@@ -1,0 +1,126 @@
+AMANAH AI - HOW TO RUN THE VERIFICATION PIPELINE ON GOOGLE COLAB
+=================================================================
+
+Notebook : amanah_ai_verification_pipeline.ipynb  (in this folder)
+Purpose  : runs the complete Python pipeline (detection, retrieval, alignment, decision, source-backed correction,
+           abstention) outside the web page, for inspection, batch runs and reproducing the reported numbers.
+Runtime  : CPU only. No GPU is needed. Python 3.10 or newer (Colab's default runtime is fine).
+Cost     : none. The pipeline uses only the Python standard library. The optional LLM step needs your own API key.
+
+
+1. FILES YOU NEED
+-----------------
+From the GitHub repository, keep these two files at hand (about 10 MB in total):
+
+    index/quran.idx.gz
+    index/hadith.idx.gz
+
+Alternative: data/quran.json and data/hadith.json (about 49 MB). The notebook then builds the two indexes itself
+(roughly 20 seconds on Colab).
+
+
+2. OPEN THE NOTEBOOK
+--------------------
+Option A - upload:
+  a. Go to https://colab.research.google.com
+  b. File > Upload notebook > choose amanah_ai_verification_pipeline.ipynb
+Option B - from GitHub:
+  a. File > Open notebook > GitHub tab > paste the URL of your public repository
+  b. Open colab_verification_pipeline/amanah_ai_verification_pipeline.ipynb
+
+
+3. CONFIGURATION
+----------------
+Cell "1. Configuration" has one switch:
+
+    USE_LLM = False     # keep False unless you want the optional Ask & Verify step (section 8 below)
+
+No other setting is required. The working folder is /content/amanah_ai (created automatically).
+
+
+4. RUN
+------
+  a. Runtime > Run all.
+  b. At cell "2. Provide the corpora", Colab shows a file chooser. Select the two index files
+     (or the two JSON corpora). If you cancel, the notebook stops with a clear message.
+  c. The module cells ("%%writefile ...") write the pipeline source files into the working folder.
+     They print nothing important; each one is preceded by a short description.
+  d. "4. Load the pipeline" prints the start-up time (a few seconds).
+  e. Sections 5-11 then run the demo text, the bundled examples, the official-format export,
+     the optional stress test and the anti-hallucination self-check.
+
+Total time for Run all: about one minute on a standard Colab CPU runtime (measured locally on a standard CPU: 56 seconds,
+including the stress test with 20 samples per kind).
+
+
+5. WHAT YOU GET
+---------------
+  - A formatted Arabic report for the sample text (section 5) and a plain-text decision table (section 6).
+  - One decision table per bundled example (section 7): VERIFIED, CORRECTED, UNSUPPORTED or HUMAN_REVIEW,
+    the reason code, and the grounding flag.
+  - Folder /content/amanah_ai/outputs/ with the three official files:
+        task1A_predictions.tsv   spans (Question_ID, Span_Start, Span_End, Span_Type)
+        task1B_predictions.tsv   Correct / Incorrect per quotation
+        task1C_predictions.tsv   correction text, or the word "خطأ" when no source exists
+    Download them from the Colab file browser (left panel > Files > outputs).
+  - Stress-test rates per kind of quotation (section 10) and the final line
+    "All N reports are grounded in the bundled corpora." (section 11).
+
+To verify your own text, edit the variable `sample` in section 5 (or call verify("...") in a new cell).
+
+
+6. OPTIONAL: ASK & VERIFY WITH AN LLM
+-------------------------------------
+  a. In Colab: click the key icon (Secrets) in the left panel > Add new secret.
+     Name: OPENAI_API_KEY      Value: your own key      Enable "Notebook access".
+     Never paste a key into a cell and never commit one to GitHub.
+  b. Optional: set the environment variable OPENAI_MODEL in a cell before section 8
+     (for example  os.environ["OPENAI_MODEL"] = "gpt-4o-mini").
+  c. Set USE_LLM = True in cell 1 and re-run from cell 1.
+The answer is cleaned of foreign-script characters and then verified exactly like any other text.
+The notebook only calls the OpenAI-compatible endpoint with your key; nothing else leaves the notebook.
+
+
+7. TROUBLESHOOTING
+------------------
+"Place index/*.idx.gz or data/*.json in the working directory"
+    The upload was cancelled or the wrong files were chosen. Re-run cell 2 and select the files listed in step 1.
+
+"ModuleNotFoundError: No module named 'verifier'" (or normalization, retrieval, ...)
+    A "%%writefile" cell was skipped. Run all cells in order (Runtime > Run all).
+
+"Index version mismatch; rebuild with index_builder.py"
+    The index files come from a different version of the repository than the notebook. Upload the index files from the
+    same repository version, or upload the JSON corpora so the notebook rebuilds them.
+
+"ValueError: Input is too long"
+    The pipeline limits one input to 20,000 characters. Split the text.
+
+Section 8 raises "Missing secret" or a 401 error
+    The secret name must be exactly OPENAI_API_KEY and "Notebook access" must be enabled. A 429 or 402 error means the
+    provider's quota or balance is exhausted.
+
+Colab shows "Session crashed" while loading the Hadith index
+    Use Runtime > Restart session, then Run all. The standard runtime has enough memory (the Hadith index needs about 1 GB).
+
+The Arabic report looks unstyled
+    The report is HTML rendered by the notebook. Re-run section 5; if the output is still plain, open the notebook in a
+    Chromium-based browser.
+
+Results differ slightly from the web page
+    They should not: the notebook embeds the exact same source files. Check that the notebook was regenerated after any change
+    (python colab_verification_pipeline/build_notebook.py).
+
+
+8. REPRODUCING THE REPORTED NUMBERS
+-----------------------------------
+The development-set evaluation (evaluate.py) needs data/islamiceval_dev_subset.jsonl and numpy. It is not part of the notebook; run it from
+the repository:  python evaluate.py
+The notebook's section 10 reproduces the stress-test rates (use a larger sample, for example 60 per kind, for the figures in the docs).
+
+
+DATA SOURCES AND LICENCES
+-------------------------
+Quran text: Tanzil Project (https://tanzil.net), CC BY 3.0, unchanged. Hadith (six books) and IslamicEval 2025 development data:
+IslamicEval 2025 Subtask 1 repository (Apache-2.0); the Hadith texts originate from https://github.com/OmarShafie/hadith.
+Full details and verification: docs/DATA_SOURCES_AND_LICENSES.md and NOTICE.md in the repository.

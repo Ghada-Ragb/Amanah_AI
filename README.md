@@ -1,7 +1,20 @@
+<div align="center">
+
 # Amanah AI
 
-**AI-Powered Verification and Correction of Quranic and Prophetic Quotations**
-(Arabic tagline: *نظام ذكي للتحقق من الاقتباسات القرآنية والحديثية*) · Arabic version: [README_AR.md](README_AR.md)
+### AI-Powered Verification and Correction of Quranic and Prophetic Quotations
+*نظام ذكي للتحقق من الاقتباسات القرآنية والحديثية*
+
+[![Live demo](https://img.shields.io/badge/Live_demo-open-2EF2C0?style=for-the-badge&labelColor=0B103A)](https://ghada-99-ragab-amanah-ai.static.hf.space)
+[![Source](https://img.shields.io/badge/Source-GitHub-6A5AF5?style=for-the-badge&labelColor=0B103A)](https://github.com/Ghada-Ragb/Amanah_AI)
+[![Docs](https://img.shields.io/badge/Docs-read-A9B6FF?style=for-the-badge&labelColor=0B103A)](docs/DOCUMENTATION.md)
+[![Arabic](https://img.shields.io/badge/العربية-README-1B2470?style=for-the-badge)](README_AR.md)
+
+![License](https://img.shields.io/badge/license-MIT-2EF2C0?labelColor=0B103A) ![Runs in browser](https://img.shields.io/badge/runs-in_your_browser-6A5AF5?labelColor=0B103A) ![No guessing](https://img.shields.io/badge/policy-never_guesses-A9B6FF?labelColor=0B103A)
+
+</div>
+
+---
 
 Amanah AI finds Quran verses and Hadith quotations in any text (typically a language-model answer), compares each one word by word
 with the bundled source corpora, **corrects Quranic wording verbatim from the source text**, and sends everything uncertain to
@@ -9,16 +22,30 @@ with the bundled source corpora, **corrects Quranic wording verbatim from the so
 
 Built for the *AI in Service of Islamic Content 2026* hackathon (IslamicEval 2025 Subtask 1: detection 1A, verification 1B, correction 1C).
 
+## What it does
 
+| Capability | What you get |
+|---|---|
+| **Detects** | Every verse and hadith in a text, with or without quotation marks |
+| **Verifies** | Word-by-word matching against the Quran and six canonical Hadith books |
+| **Corrects** | Altered Quranic wording replaced by the exact source text, with one-click copy |
+| **Abstains** | Anything uncertain goes to human review, never to a guess |
+| **Private** | Verification runs in your browser; your text is not sent to a server |
 
-**## Live demo**
+## Live demo
 
-\<!-- LIVE_DEPLOYMENT_URL -->
-**\*\*Live URL: \`[https://ghada-99-ragab-amanah-ai.static.hf.space]\`\*\*** (replace after deploying; see [docs/DEPLOYMENT.md]\(docs/DEPLOYMENT.md))
+| | Link |
+|---|---|
+| **Try it now** | **https://ghada-99-ragab-amanah-ai.static.hf.space** |
+| **Source code** | **https://github.com/Ghada-Ragb/Amanah_AI** |
 
-**\*\*Demo Video: \`[ADD_DEMO_VIDEO_URL_HERE]\`\*\***
+**Two ways to use it**
+1. **Ask & Verify**: type a question, a language model answers, and every verse and hadith in the answer is checked.
+2. **Verify directly**: paste any text and get the same checks.
 
-\<!-- /LIVE_DEPLOYMENT_URL -->
+> **Quick tour:** press **«جرّب مثالًا»** on either page. The first examples are demanding ones, such as an invented answer about *«غزوة الشفع والوتر»*, an ayah with one substituted word, and an unmarked quotation hidden in plain prose.
+
+**Reading the result:** Green: verified · Red: mismatch (the exact source text is offered for the Quran, with a copy button) · Amber: needs human review.
 
 ## The problem
 
@@ -32,7 +59,7 @@ a human must decide"* — and never guess.
 1. **Ask & Verify (default page)** – the user asks a question, a language model answers, and the verification engine checks every quotation in that answer.
 2. **Verify directly** – the user pastes any text and gets the same checks.
 3. **Three decisions only** – *verified* (green), *mismatch* (red; for Quran the exact source text is offered as correction), *needs human review* (amber, no correction offered).
-4. **Try an example** – both pages have a «جرّب مثالًا» button with 25 saved scenarios (all-correct / all-wrong / mixed ayahs and hadiths, one-word changes, short quotes, misattribution, fabricated hadith, …). Each one was run through the engine and its outcome is asserted by a unit test.
+4. **Try an example** – both pages have a «جرّب مثالًا» button with 30 saved scenarios (all-correct / all-wrong / mixed ayahs and hadiths, one-word changes, short quotes, misattribution, fabricated hadith, …). Each one was run through the engine and its outcome is asserted by a unit test.
 
 ## Anti-hallucination design
 
@@ -79,12 +106,12 @@ Detailed methodology: [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
 ## Quick start
 
 ```bash
-python -m venv .venv && source .venv/bin/activate        
+python -m venv .venv && source .venv/bin/activate       
 pip install -r requirements.txt
-python app.py                                             
-python -m unittest discover -s tests                      
+python app.py                                             # local app, http://127.0.0.1:7860
+python -m unittest discover -s tests                     
 python evaluate.py                                        
-python research/stress_test.py 60 7                       
+python research/stress_test.py 60 7                      
 python build_static_space.py                              
 ```
 
@@ -122,7 +149,7 @@ The 1A baseline of 0.9091 in the project proposal comes from earlier CAMeLBERT w
 
 No fabricated or spliced text was ever marked verified in this run.
 
-## Performance (measured)
+## ⏱ Performance (measured)
 
 Load time was traced to **duplicate downloads** (preload/prefetch plus the worker's own fetch; Hugging Face ignores `_headers`) and a large Hadith index,
 not to computation. Fixes: no duplicate fetches, Hadith index fetched in parallel with the Python runtime and loaded lazily, per-build Cache API,
