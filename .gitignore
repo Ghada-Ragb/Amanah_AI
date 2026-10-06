@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Tooling
+.pytest_cache/
+.ipynb_checkpoints/
+.cache/
+.mypy_cache/
+.ruff_cache/
+
+# Gradio / local runtime
+flagged/
+gradio_cached_examples/
+.gradio/
+
+# Generated outputs (index/ is committed on purpose: it is what makes start-up fast)
+models/
+outputs*/
+results.json
+
+# Secrets and local configuration
+.env
+*.key
+*.pem
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Generated deployment folder
+static_space/
+
+# Local secrets for Cloudflare Pages dev
+.dev.vars

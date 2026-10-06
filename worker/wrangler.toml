@@ -1,0 +1,21 @@
+name = "icv-ask-proxy"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+# Free option, no API key and no card: Cloudflare Workers AI runs a model inside this Worker.
+[ai]
+binding = "AI"
+
+[vars]
+PROVIDER = "workers-ai"
+# AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"   # optional: tried first; otherwise a built-in list of current models is tried in order
+# Diagnostics (uncomment DEBUG only while troubleshooting; never leave it on in production):
+# DEBUG = "1"
+
+# To use an OpenAI-compatible API instead (OpenAI, Groq, Gemini compatibility endpoint ...):
+#   remove the PROVIDER line above, run  npx wrangler secret put OPENAI_API_KEY  and set
+# OPENAI_BASE_URL = "https://api.groq.com/openai/v1"
+# OPENAI_MODEL = "llama-3.3-70b-versatile"
+# OPENAI_TOKEN_PARAM = "max_tokens"      # "max_completion_tokens" (default) | "max_tokens" | "none"
+# Optional extra browser origins (comma separated); *.hf.space and *.pages.dev are allowed by default:
+# ALLOWED_ORIGINS = "https://YOUR-USER-YOUR-SPACE.static.hf.space"

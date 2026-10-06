@@ -1,0 +1,4 @@
+# Runtime for the Gradio app (the browser demo needs none of these: it runs on Pyodide).
+gradio>=5.0,<6
+rapidfuzz>=3.0        # optional: faster Levenshtein; a pure-Python fallback exists
+numpy>=1.24           # only for evaluate.py
